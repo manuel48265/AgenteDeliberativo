@@ -353,7 +353,7 @@ void MonitorJuego::inicializar(int pos_filaJ, int pos_colJ, int brujJ, int pos_f
     nueva_entidad(new Entidad(jugador, jugador_, static_cast<Orientacion>(brujJ), pos_filaJ, pos_colJ, new Jugador3D(""), new ComportamientoJugador(getMapa()->getNFils()), 1, objetivosActivos, 3000));
     nueva_entidad(new Entidad(npc, colaborador, static_cast<Orientacion>(brujS), pos_filaS, pos_colS, new Colaborador3D(""), new ComportamientoColaborador(), 1, objetivosActivos, 3000));
   }
-  
+
   ReAparicionesEntidad( 0, pos_filaJ, pos_colJ, static_cast<Orientacion>(brujJ));
   ReAparicionesEntidad( 1, pos_filaS, pos_colS, static_cast<Orientacion>(brujS));
   get_entidad(0)->SetColaborador(get_entidad(1));
@@ -668,12 +668,4 @@ void MonitorJuego::init_casillas_especiales(unsigned int f, unsigned int c, unsi
   else if (celda_inicial == 'K'){
     get_entidad(0)->Cogio_Bikini(true);
   }
-  
-  if (celda_colab == 'D'){
-    get_entidad(1)->Cogio_Zapatillas(true);
-  }
-  else if (celda_colab == 'K'){
-    get_entidad(1)->Cogio_Bikini(true);
-  }
-
 }
