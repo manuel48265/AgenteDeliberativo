@@ -1,0 +1,9 @@
+Recibido un empujón por un lobo
+Se agotaron los instantes de simulacion
+Instantes de simulacion no consumidos: 0
+Tiempo Consumido: 0.006713
+Nivel Final de Bateria: 2800
+Colisiones: 1
+Empujones: 0
+Porcentaje de mapa descubierto: 0.16
+Objetivos encontrados: (0) 0

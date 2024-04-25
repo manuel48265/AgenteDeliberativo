@@ -308,20 +308,6 @@ class ComportamientoJugador : public Comportamiento {
           }
         }
       }
-
-      int max = 0;
-      int imprimir;
-
-      for(int i = 0; i< mapaResultado.size(); i++){
-        for(int j = 0; j < mapaResultado.size(); j++){
-          imprimir = min(bateriaColab.at(2).at(i).at(j), bateriaColab.at(1).at(i).at(j));
-
-          cout << imprimir << "\t"; 
-
-        }
-        cout << endl; 
-      }
-      
     }
 
     void N3Mejora(const ubicacion &goal){
@@ -332,15 +318,7 @@ class ComportamientoJugador : public Comportamiento {
       GenerarMapa2(1,ptr_funct, mapaResultado,bateriaColab, costo_real);
       ptr_funct = CosteBikini;
       GenerarMapa2(2,ptr_funct, mapaResultado,bateriaColab, costo_real);
-      for(int k = 0; k<3; k++){
-        for(int i = 0; i< mapaResultado.size(); i++){
-          for(int j = 0; j < mapaResultado.size(); j++){
-            
-              cout << bateriaColab.at(k).at(i).at(j) << "\t";
-            }
-          cout << endl; 
-        }
-      }
+      
 
     } 
 

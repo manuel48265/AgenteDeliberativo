@@ -1149,11 +1149,11 @@ bool ComportamientoJugador::a_star(const stateN3 &inicio, const ubicacion &final
 	}
 
 	if(mapaResultado.at(current_node.st.colaborador.f).at(current_node.st.colaborador.c) == 'D'){
-		current_node.st.jugador_zapatillas = true;
-		current_node.st.jugador_bikini = false;
+		current_node.st.colaborador_zapatillas = true;
+		current_node.st.colaborador_bikini = false;
 	}else if(mapaResultado.at(current_node.st.colaborador.f).at(current_node.st.colaborador.c) == 'K') {
-		current_node.st.jugador_zapatillas = false;
-		current_node.st.jugador_bikini = true;
+		current_node.st.colaborador_zapatillas = false;
+		current_node.st.colaborador_bikini = true;
 	}
 
 	vector<Action> accion = {act_CLB_WALK,act_CLB_TURN_SR, act_CLB_STOP, actWALK,actRUN,actTURN_L,actTURN_SR,actIDLE};
@@ -1222,7 +1222,7 @@ bool ComportamientoJugador::a_star(const stateN3 &inicio, const ubicacion &final
 				child.padre = &(it->second); 
 				child.st.costo_bateria = current_node.st.costo_bateria + costeBateriaNX(accion.at(i),current_node.st) + 
 										 costeBateriaColab(current_node.st.ultimaOrdenColaborador, current_node.st);
-				child.st.heuristica = Minimos(child.st) + child.st.costo_bateria;
+				child.st.heuristica =  Minimos(child.st) + child.st.costo_bateria;
 
 				if(mapaResultado.at(child.st.jugador.f).at(child.st.jugador.c) == 'D'){
 					child.st.jugador_zapatillas = true;
@@ -1652,7 +1652,7 @@ Action ComportamientoJugador::think(Sensores sensores)
 				break;
 			case 3:
 				GenerarN3(goal);
-				//N3Mejora(goal);
+				N3Mejora(goal);
 				hayPlan = a_star(c_state, goal);
 				break;
 			default:
@@ -1661,6 +1661,7 @@ Action ComportamientoJugador::think(Sensores sensores)
 			
 			if(plan.size() > 0){
 				VisualizaPlan(c_state,plan);
+				PintaPlan(plan);
 			}
 			
 		}
@@ -1681,6 +1682,7 @@ Action ComportamientoJugador::think(Sensores sensores)
 			accion = actWHEREIS;
 		}else{
 			PonerTerrenoMapa(sensores.terreno, c_state);
+			accion = actTURN_SR;
 		}
 		
 		

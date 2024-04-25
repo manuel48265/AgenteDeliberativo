@@ -1,0 +1,3 @@
+66877
+-----> Casilla objetivo alcanzada por el jugador
+Longitud del camino: 53
