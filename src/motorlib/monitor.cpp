@@ -62,6 +62,7 @@ void MonitorJuego::setMapa(const char *file)
   ifile.close();
 
   mapa = new Mapa(mapAux, &entidades);
+  
 }
 
 bool MonitorJuego::inicializarJuego()
@@ -79,7 +80,7 @@ void MonitorJuego::generate_a_valid_cell(int &pos_fila, int &pos_col, int &ori)
 {
   pos_col = -1;
   pos_fila = -1;
-  char celdaRand = '_';
+  unsigned char celdaRand = '_';
   do
   {
     pos_fila = aleatorio(getMapa()->getNFils() - 1);
@@ -105,7 +106,7 @@ bool MonitorJuego::is_a_valid_cell_like_goal(int f, int c)
 void MonitorJuego::generate_a_objetive()
 {
   int pos_col = -1, pos_fila = -1;
-  char celdaRand = '_';
+  unsigned char celdaRand = '_';
   do
   {
     pos_fila = aleatorio(getMapa()->getNFils() - 1);
@@ -668,4 +669,16 @@ void MonitorJuego::init_casillas_especiales(unsigned int f, unsigned int c, unsi
   else if (celda_inicial == 'K'){
     get_entidad(0)->Cogio_Bikini(true);
   }
+}
+
+void MonitorJuego::reset_objetivos(){
+  if(!objetivos.empty()){
+     objetivos.clear();
+  }
+  
+  if(!objetivosActivos.empty()){
+    objetivosActivos.clear();
+  }
+ 
+
 }

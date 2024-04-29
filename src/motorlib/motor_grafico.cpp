@@ -332,6 +332,8 @@ void botonAceptarNuevoMapaCB(int valor)
     const char *file = listbox->curr_text.c_str();
     monitor.setMapa(strcat(path, file));
 
+    monitor.reset_objetivos();
+
     // posicion del agente y del colaborador
     if (monitor.numero_entidades() > 1)
     {
@@ -364,6 +366,7 @@ void botonAceptarNuevoMapaCB(int valor)
     }
     else
     {
+      
       monitor.generate_a_valid_cell(posF, posC, orienta);
       monitor.generate_a_valid_cell(SposF, SposC, Sorienta);
     }
@@ -490,7 +493,7 @@ void botonConfigurarNuevoMapaCB(int valor)
 
     /* Paso las variables de monitor a variables locales a este metodo */
     semilla = monitor.get_semilla();
-
+    
     if (monitor.numero_entidades() > 1)
     {
       posC = monitor.get_entidad(0)->getCol();
