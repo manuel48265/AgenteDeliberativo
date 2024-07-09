@@ -345,6 +345,7 @@ class ComportamientoJugador : public Comportamiento {
       hay_baterias = false;
       colab = true;
       busco_colab = false;
+      LIMITE = 1020;
 
     }
     ComportamientoJugador(std::vector< std::vector< unsigned char> > mapaR) : Comportamiento(mapaR) {
@@ -380,7 +381,7 @@ class ComportamientoJugador : public Comportamiento {
     stateN2 apply(const Action &a, const stateN2 &st);
     stateN3 apply(const Action &a, const stateN3 &st);
     unsigned int costeBateriaNX(const Action &act,const stateN2 &st);
-    unsigned int costeBateriaColab(const Action &act,const stateN3 &st);
+    int costeBateriaColab(const Action &act,const stateN3 &st);
     void PlanJugador(const nodeNX<state> &node);
     void PlanJugador(const nodeNX<stateN2> &node);
     void PlanJugador(const nodeNX<stateN4> &node);
@@ -508,6 +509,7 @@ class ComportamientoJugador : public Comportamiento {
     bool hay_baterias; 
     bool colab; 
     bool busco_colab; 
+    int LIMITE;
 
 
 

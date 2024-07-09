@@ -13,10 +13,6 @@
 #include <queue>
 #include <limits>
 
-int LIMITE = 1020;
-
-
-
 bool Accesible(const stateN4& st, const ubicacion& goal){
 	return(st.jugador.f == goal.f and st.jugador.c == goal.c);
 }
@@ -525,8 +521,8 @@ unsigned int ComportamientoJugador::costeBateriaN4(const Action &act,const state
 
 
 
-unsigned int ComportamientoJugador::costeBateriaColab(const Action &act,const stateN3 &st){
-	unsigned int coste; 
+int ComportamientoJugador::costeBateriaColab(const Action &act,const stateN3 &st){
+	int coste = 0; 
 	switch (mapaResultado.at(st.colaborador.f).at(st.colaborador.c))
 	{
 	case 'A':
@@ -2203,6 +2199,8 @@ void ComportamientoJugador::Heuristica(const stateN4 &inicio, const ubicacion &f
 	int costo = solution.st.costo_bateria;
 	stateN4 aux;
 
+	cout << "pasa" << endl; 
+
 	while(solution.padre != nullptr){
 
 		aux = solution.st;
@@ -2255,7 +2253,7 @@ bool ComportamientoJugador::a_starColabN4(const stateN4 &inicio, const ubicacion
 	unordered_map<unsigned long long, nodeNX<stateN4>> explored;
 
 	bool SolutionFound = (current_node.st.colaborador.f== final.f and
-						  current_node.st.colaborador.c == final.c and current_node.st.ultimaOrdenColaborador == act_CLB_STOP);
+						  current_node.st.colaborador.c == final.c);
 
 	frontier.push(current_node);
 	explored.insert({Hash::hashN3(current_node),current_node});
@@ -2264,21 +2262,32 @@ bool ComportamientoJugador::a_starColabN4(const stateN4 &inicio, const ubicacion
 	nodeNX<stateN4> solution = nodeNX<stateN4>();
 	int i = 0;
 	nodeNX<stateN4> child;
+	bool veo_colab;
 
 
 	while (!frontier.empty() and !SolutionFound and current_node.st.costo_bateria <= LIMITE){
 		frontier.pop();
 
 		i = 0; 
-		 it = explored.find(Hash::hashN3(current_node));
-		//La heurística es monótona
+		cout << COSTE_ACCION << endl;
+		if(current_node.st.costo_bateria < 0){
+			cout << current_node.st.jugador.f << "," << current_node.st.jugador.c << endl; 
+			cout << current_node.st.colaborador.f << "," << current_node.st.colaborador.c << endl;
+			
+		}
 
-		if (current_node.st.colaborador.f == final.f and current_node.st.colaborador.c == final.c and current_node.st.ultimaOrdenColaborador == act_CLB_STOP){
+		it = explored.find(Hash::hashN3(current_node));
+		//La heurística es monótona
+		veo_colab = PuedoVerColaborador(current_node.st);
+
+		if (current_node.st.colaborador.f == final.f and current_node.st.colaborador.c == final.c){
+			if(veo_colab){
 				solution = current_node;
 				SolutionFound = true;
+			}
 		}else if(current_node.st.costo_bateria <= it->second.st.costo_bateria){
 
-			if(PuedoVerColaborador(current_node.st)){
+			if(veo_colab){
 				while( i < 3){
 					child.st = applyJC(accion.at(i),current_node.st);
 					child.padre = &(it->second); 
@@ -2373,14 +2382,12 @@ bool ComportamientoJugador::a_starColabN4(const stateN4 &inicio, const ubicacion
 				i++;
 			}
 			
-			if (!SolutionFound and !frontier.empty() ){
-				current_node = frontier.top();
-			}
-		}else{
-			if (!frontier.empty()){
-				current_node = frontier.top();
-			}
 		}
+
+		if (!frontier.empty()){
+			current_node = frontier.top();
+		}
+		
 
 	}
 	
@@ -2444,20 +2451,15 @@ bool ComportamientoJugador::a_starColabN4(const stateN4 &inicio, const ubicacion
 		
 	}
 
+	if(SolutionFound){
+		plan.push_back(act_CLB_STOP);
+	}
+
+	
+
 	return SolutionFound;
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 void PintaPlan(const list<Action> &plan)
 {
@@ -2571,6 +2573,9 @@ void ComportamientoJugador::PonerTerrenoMapa(const vector<unsigned char> &terren
 	do{
 
 		mapaResultado.at(pivote.first).at(pivote.second) = terreno.at(i*(i+1));
+		if(terreno.at(i*(i+1)) != 'P' and terreno.at(i*(i+1)) != 'M'){
+			refresh.push(pivote);
+		}
 		pivote_izd = pivote_der = pivote; 
 
 		for(int j = i + 1; j <= 3; j++){
@@ -2580,11 +2585,11 @@ void ComportamientoJugador::PonerTerrenoMapa(const vector<unsigned char> &terren
 			mapaResultado.at(pivote_izd.first).at(pivote_izd.second) = terreno.at(j*j + i);
 			mapaResultado.at(pivote_der.first).at(pivote_der.second) = terreno.at(j*(j+2) - i);
 
-			if(terreno.at(j*j + i) != 'P' and terreno.at(j*j + i) != 'M' and !accesible.at(pivote_izd.first).at(pivote_izd.second)){
+			if(terreno.at(j*j + i) != 'P' and terreno.at(j*j + i) != 'M' ){
 				refresh.push(pivote_izd);
 			}
 				
-			if(terreno.at(j*(j+2) - i) != 'P' and terreno.at(j*(j+2) - i) != 'M' and !accesible.at(pivote_der.first).at(pivote_der.second)){
+			if(terreno.at(j*(j+2) - i) != 'P' and terreno.at(j*(j+2) - i) != 'M'){
 				refresh.push(pivote_der);
 			}
 
@@ -2624,17 +2629,28 @@ void ComportamientoJugador::ActualizaCola(){
 				refresh.push(pivote);
 
 			}
+
+			if(mapaResultado.at(pivote.first).at(pivote.second) == 'X' and accesible.at(pivote.first).at(pivote.second)){
+				hay_baterias = true; 
+				ubicacion u;
+				u.f = pivote.first;
+				u.c = pivote.second;
+				u.brujula = norte;
+				baterias.push_back(u);
+			}
 		}
-		
 
 		if(mapaResultado.at(q.first).at(q.second) == 'X' and accesible.at(q.first).at(q.second)){
-			hay_baterias = true; 
-			ubicacion u;
-			u.f = q.first;
-			u.c = q.second;
-			u.brujula = norte;
-			baterias.push_back(u);
-		}
+				hay_baterias = true; 
+				ubicacion u;
+				u.f = q.first;
+				u.c = q.second;
+				u.brujula = norte;
+				baterias.push_back(u);
+			}
+		
+
+		
 
 		if(!refresh.empty()){
 			q = refresh.front();
@@ -2774,7 +2790,7 @@ Action ComportamientoJugador::think(Sensores sensores)
 		busco_colab = false; 
 
 		if(hay_baterias){
-			LIMITE = 1300;
+			LIMITE = 1400;
 		}else{
 			LIMITE = 1020;
 		}
@@ -2814,9 +2830,8 @@ Action ComportamientoJugador::think(Sensores sensores)
 				if(plan.size() > 0){
 					VisualizaPlan(c_state,plan);
 					PintaPlan(plan);
+					recargando = true;
 				}
-
-				recargando = true;
 
 			}else if((c_state.jugador.f ==  sensores.destinoF and c_state.jugador.c == sensores.destinoC) or (c_state.colaborador.f ==  sensores.destinoF and c_state.colaborador.c == sensores.destinoC)){
 				hayPlan = false; 
@@ -2830,6 +2845,16 @@ Action ComportamientoJugador::think(Sensores sensores)
 				goal.f = sensores.destinoF;
 				goal.c = sensores.destinoC;
 			}
+
+			if(sensores.vida < 100){
+				if(hayPlan and recargando){
+					hayPlan = false; 
+					plan.clear();
+				}
+				recargando = false; 
+			}
+
+
 
 			
 			PonerTerrenoMapa(sensores.terreno, c_state);

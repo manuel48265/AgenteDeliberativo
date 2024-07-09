@@ -682,12 +682,3 @@ void MonitorJuego::reset_objetivos(){
  
 
 }
-
-void MonitorJuego::reset_objetivos(){
-  if(!objetivos.empty()){
-     objetivos.clear();
-  }
-  if(!objetivosActivos.empty()){
-    objetivosActivos.clear();
-  }
-}
