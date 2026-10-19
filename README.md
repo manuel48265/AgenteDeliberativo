@@ -1,102 +1,47 @@
-# Práctica 2 de *Inteligencia Artificial*, curso 2023/2024
+# Deliberative planning agent
 
-Si has realizado la práctica1, y tienes la clave SSH configurada, puedes ir directamente al [paso 2](#2.-crear-tu-copia-personal-del-repositorio-de-la-asignatura).
+A deliberative agent in C++ that plans complete routes in a 2D world with classic search algorithms,
+from breadth-first search to A* with battery management and coordination with a second agent.
+Assignment 2 of the Artificial Intelligence course at the University of Granada (2023/24). **It won
+first place in the deliberative-agent category of the course's internal agents competition (2024).**
 
+## The problem
 
+The world is a grid of terrains with different battery costs, which depend on the items each agent
+carries (a bikini makes water cheaper, sneakers make forest cheaper). The agent controls itself and,
+from level 1, gives orders to a second agent, the collaborator. It must compute a plan, a sequence
+of actions, that reaches a goal under increasingly demanding conditions:
 
-## Prerrequisitos
+| Level | Goal | Algorithm |
+|---|---|---|
+| 0 | Reach a cell with the fewest actions | Breadth-first search |
+| 1 | Bring the collaborator to a cell with the fewest actions | Breadth-first search over joint states |
+| 2 | Reach a cell with the least battery spent | Uniform-cost search |
+| 3 | Bring the collaborator to a cell with the least battery spent | A* over joint states |
+| 4 | Keep completing goals in a partially known world, recharging when needed | A* with replanning |
 
-### Crear una cuenta en [GitHub](https://github.com/). 
-Para ello, puedes usar tu correo personal, el de *@correo.ugr.es* o el de *@go.ugr.es*.
+## My solution
 
+All the planning code is in
+[`Comportamientos_Jugador/jugador.cpp`](Comportamientos_Jugador/jugador.cpp); the simulator and the
+rest of the code were provided by the course staff.
 
-### 1. Añadir tu clave SSH a GitHub
-Hay varias maneras de conectarte desde tu ordenador a GitHub. Si utilizas un navegador, usarás tu usuario y contraseña. Desde el terminal, lo más cómodo es utilizar una clave SSH. Puedes crear una nueva si no tienes, o reutilizar una ya existente. Tienes toda la información para realizar la configuración en: 
-[Conectar a GitHub con SSH](https://docs.github.com/es/authentication/connecting-to-github-with-ssh)
+- **State design.** A different state per level: position and orientation of the agent and, when
+  needed, of the collaborator, the items each one holds and the last order given, so each search only
+  tracks what matters for its goal.
+- **Cost functions.** The battery cost of every action on every terrain, with and without items.
+- **Heuristics for A\*.** Estimates of the remaining cost from the distance to the goal and from
+  precomputed battery-cost tables.
+- **Level 4.** The agent fills in its map from its sensors as it moves, replans when needed, chooses
+  whether to move itself or the collaborator, and plans detours to charging cells when the battery is
+  low.
 
+## Build and run (Linux)
 
-### 2. Crear tu copia personal del repositorio de la asignatura
-Cada estudiante debe tener su propia copia del repositorio para poder trabajar sobre ella. En adelante, a tu copia la llamaremos *origin*, y al repositorio original de la asignatura lo llamaremos *upstream* (NOTA: Estas son convenciones que la mayoría de los desarrolladores usan, pero los puedes llamar como quieras). 
-
-> La forma usual de crear tu copia del repositorio es realizando un *fork*. Sin embargo, dado que realizar un *fork* de un repositorio con visibilidad pública obliga al que la copia sea también pública, nosotros usaremos un procedimiento diferente que nos permite que nuestra copia del repositorio sea privada.
-
-Para realizar la copia, una vez que tengas creada tu cuenta en GitHub, haz click en <https://github.com/new/import> y rellena tal y como se ve en la imagen de abajo. El repositorio que quieres importar es `https://github.com/ugr-ccia-IA/practica2`. ¡Asegúrate de que tu repositorio es privado!
-
-![Importar repositorio practica2](doc/img/import_new_repo.png)
-
-
-### 3. Clonar tu repositorio en tu máquina
-Una vez hecho el paso anterior, tendrás tu repositorio personal de la práctica1 en GitHub; puedes descargarlo a tu ordenador usando:
-`git clone git@github.com:TU_USUARIO_GITHUB/practica2.git` (si no has configurado tu clave SSH, esto no funcionará).
-
-
-### 4. Modificar el código y guardar los cambios
-Es el momento de empezar a modificar ficheros. Abre el fichero README.md (este fichero) y busca la línea 89. Debes cambiar el enlace que usa el botón para que apunte a tu repositorio y no al de la asignatura.
-Una vez lo hayas modificado, guarda el fichero, y ejecuta los siguientes comandos en el terminal estando dentro de la carpeta `practica2`:
-
+```bash
+git clone https://github.com/manuel48265/AgenteDeliberativo.git
+cd AgenteDeliberativo
+./install.sh        # installs dependencies and runs cmake and make
+./practica2         # with graphical interface
+./practica2SG       # without interface
 ```
-git add . 
-git commit -m "Cambiando el enlace del botón"
-git push origin main 
-```
-
-Los tres comandos anteriores le indican a git que 1) queremos guardar una nueva versión con todos los ficheros modificados de la carpeta, 2) que haga esa versión y le ponga el comentario "Cambiando el enlace del botón", y 3) que envíe esta nueva versión a la copia de nuestro repositorio alojada en GitHub.
-
-Este proceso es el que debes repetir cada vez que vayas avanzando en la implementación de la práctica: add, commit, push.
-
-
-
-### 5. Enlazar tu repositorio personal con el de la asignatura
-Aunque tu repositorio y el de la asignatura (recuerda que los conocemos por *origin* y *upstream* respectivamente) sean independientes, nos va a interesar que estén enlazados. De esta forma, podrás aplicar fácilmente sobre tu repositorio (*origin*) cualquier actualización que los profesores realicemos en *upstream*. Para enlazarlos, ejecuta lo siguiente dentro de la carpeta de tu repositorio:
-
-`git remote add upstream git@github.com:ugr-ccia-IA/practica2.git`
-
-
-### Actualizar tu repositorio con cambios realizados en el de la asignatura
-Una vez tengas los repositiorios enlazados, lo único que debes hacer para aplicar posibles cambios en el repositorio de la asignatura en tu repositorio (cambios de *upstream* en *origin*) es: `git pull upstream main`
-
-Hacer esto no sobreescribirá tus avances en la implementación de la práctica, puesto que tú no deberías haber modificado ninguna parte del código diferente a la que se indica en el guión.
-
-Si quieres que esos cambios también se guarden en github, a continuación ejecuta: `git push origin main`
-
-
-> Si quieres saber más sobre Git y GitHub, en Internet existen multitud de recursos, incluidos videos y tutoriales. Para realizar esta práctica sólo necesitas lo básico (hacer commits), pero hay muchas cosas más que se pueden hacer con estas herramientas (uso de ramas, gestión de conflictos, etc.) 
-El propio GitHub pone a tu disposición un [breve curso](https://classroom.github.com/a/W33pQ3pa) (en inglés) para aprender lo básico.
-
-
-## Realización de la práctica
-El guión (disponible en [PRADO](https://pradogrado2324.ugr.es/)) contiene toda la información sobre en qué consiste la práctica2. Leelo con atención.
-
-Junto a ellos, también tienes a tu disposición una pequeña presentación de resumen, y un tutorial. Debes revisarlos pues continen los primeros pasos a realizar.
-
-
-### Instalación local (linux)
-
-Una vez que tengas tu repositorio (el fork que has realizado) en tu ordenador, puedes compilar el código usando `./install.sh` (esto instalará todas las dependencias, y ejecutará `cmake` y `make`. ).
-A continuación, puedes lanzar el software con interfaz gráfica con `./practica2`, o sin ella con `./practica2SG`.
-
-Cuando realices cualquier modificación en el código, debes recompilar, así que usa `make clean` y `make`.
-
-
-### Instalación en máquina virtual
-Si no tienes linux de forma nativa en tu ordenador, puedes crear una máquina virtual en tu ordenador (por ejemplo, usando VirtualBox), e instalar linux en ella. A partir de ahí, puedes trabajar dentro de ella como si tuvieras linux instalado de forma nativa.
-
-
-### Desarrollo remoto con Gitpod
-Si prefieres no instalar nada localmente, puedes usar [Gitpod](https://gitpod.io). Este es un servicio que no depende de los profesores de la asignatura y que no podemos garantizar que funcione perfectamente. Para ello, haz click en el siguiente botón (después de modificarlo para que apunte a tu repositorio y no al de la asignatura) y sigue las instrucciones.
-
-<!-- IMPORTANTE: Debes cambiar en el siguiente enlace TUSUARIO por tu nombre de usuario en github!  -->
-[![Abrir con Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/TUSUARIO/practica2)
-
-Una vez que el servidor remoto esté creado (la primera vez tardará un rato en configurarlo todo, las siguientes veces, debería ser más inmediato), verás un IDE completamente funcional en el navegador; puedes seguir usándolo, o usar VScode localmente si lo tienes instalado(aunque conectado al servidor Gitpod remoto). También, se te debería de haber abierto una nueva ventana en el navegador que te mostrará la interfaz gráfica del programa.
-
-Si no se abre la ventana, copia la url del navegador y anteponle `6080-`. 
-Por ejemplo, si la URL del IDE es `https://USUARIO-REPO-zzzzz.ws-eu34.gitpod.io` abriríamos en una nueva pestaña `https://6080-USUARIO-REPO-zzzzz.ws-eu34.gitpod.io`.
-
-
-Si trabajas con Gitpod, ¡no olvides hacer commit de todos tus cambios para que se vayan guardando en tu repositorio!
-
-
-## Más información
-Hemos creado un [fichero con preguntas frecuentes](./FAQ.md) que han ido apareciendo en las distintas sesiones de prácticas.
-
